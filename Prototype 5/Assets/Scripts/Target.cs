@@ -5,6 +5,7 @@ using UnityEngine;
 public class Target : MonoBehaviour
 {
     private Rigidbody targetRb;
+    private GameManager gameManagerScript;
 
     private float minForce = 12;
     private float maxForce = 15;
@@ -12,7 +13,9 @@ public class Target : MonoBehaviour
     private float xRange = 4;
     private float ySpawnPos = 2;
 
+    public int pointValue;
 
+    public ParticleSystem explosionPartical;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,7 +25,7 @@ public class Target : MonoBehaviour
 
         transform.position = SetPosition();
 
-
+        gameManagerScript = FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
@@ -33,12 +36,22 @@ public class Target : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Destroy(gameObject);
+        if (gameManagerScript.isGameActive)
+        {
+            Destroy(gameObject);
+            gameManagerScript.UpdateScore(pointValue);
+            Instantiate(explosionPartical, transform.position, explosionPartical.transform.rotation);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         Destroy(gameObject);
+        if(!gameObject.CompareTag("Bad"))
+        {
+            gameManagerScript.GameOver();
+        }
+        
     }
     Vector3 ApplyForce()
     {
