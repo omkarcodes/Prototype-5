@@ -6,6 +6,7 @@ public class Target : MonoBehaviour
 {
     private Rigidbody targetRb;
     private GameManager gameManagerScript;
+    
 
     private float minForce = 12;
     private float maxForce = 15;
@@ -26,6 +27,7 @@ public class Target : MonoBehaviour
         transform.position = SetPosition();
 
         gameManagerScript = FindObjectOfType<GameManager>();
+        
     }
 
     // Update is called once per frame
@@ -38,6 +40,10 @@ public class Target : MonoBehaviour
     {
         if (gameManagerScript.isGameActive)
         {
+            if(gameObject.CompareTag("Bad"))
+            {
+                gameManagerScript.CamShake();
+            }
             Destroy(gameObject);
             gameManagerScript.UpdateScore(pointValue);
             Instantiate(explosionPartical, transform.position, explosionPartical.transform.rotation);
@@ -46,8 +52,13 @@ public class Target : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (gameObject.CompareTag("Good") && gameManagerScript.isGameActive)
+        {
+            gameManagerScript.UpdateLives(1);
+        }
+        
         Destroy(gameObject);
-        if(!gameObject.CompareTag("Bad"))
+        if(!gameObject.CompareTag("Bad") && gameManagerScript.lives == 0)
         {
             gameManagerScript.GameOver();
         }
